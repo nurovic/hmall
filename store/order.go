@@ -17,14 +17,14 @@ func init() {
 }
 
 // Siparişi MongoDB'ye ekleyen fonksiyon
-func CreateOrder(order models.Order) error {
+func CreateOrder(ctx context.Context, order models.Order) error {
 	_, err := orderCollection.InsertOne(context.Background(), order)
 	return err
 }
 
 // Siparişi ID ile getiren fonksiyon
-func GetOrderByID(id string) (*models.Order, error) {
+func GetOrderByID(ctx context.Context,id string) (*models.Order, error) {
 	var order models.Order
-	err := orderCollection.FindOne(context.Background(), bson.M{"id": id}).Decode(&order)
+	err := orderCollection.FindOne(ctx, bson.M{"id": id}).Decode(&order)
 	return &order, err
 }

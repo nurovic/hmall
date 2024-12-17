@@ -11,11 +11,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// Product koleksiyonu
 var productCollection *mongo.Collection
 
 func init() {
-	// MongoDB client al ve koleksiyonu başlat
 	client := GetMongoClient()
 	if client == nil {
 		log.Fatal("MongoDB istemcisi başlatılamadı")
@@ -23,26 +21,29 @@ func init() {
 	productCollection = client.Database("hmall").Collection("products")
 }
 
-// Ürünü MongoDB'ye ekleyen fonksiyon
-func CreateProduct(product models.Product) error {
-	_, err := productCollection.InsertOne(context.Background(), product)
-	return err
+func CreateProduct(ctx context.Context, product models.Product) error {
+	_, err := productCollection.InsertOne(ctx, product)
+	if err != nil {
+		return errors.New("ürün eklenirken bir hata oluştu")
+	}
+
+	return nil
 }
 
-// Ürünü ID ile getiren fonksiyon
-func GetProductByID(id string) (*models.Product, error) {
-	// ID'yi ObjectId'ye dönüştür
+func GetProductByID(ctx context.Context, id string) (*models.Product, error) {
+
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, errors.New("geçersiz ID formatı")
 	}
+
 	var product models.Product
-	err = productCollection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&product)
+	err = productCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&product)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.New("ürün bulunamadı")
 		}
-		return nil, err
+		return nil, errors.New("ürün getirilirken bir hata oluştu")
 	}
 
 	return &product, nil

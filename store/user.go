@@ -22,13 +22,13 @@ func init() {
 	userCollection = client.Database("hmall").Collection("users")
 }
 
-func CreateUser(user models.User) error {
-	_, err := userCollection.InsertOne(context.Background(), user)
+func CreateUser(ctx context.Context, user models.User) error {
+	_, err := userCollection.InsertOne(ctx, user)
 	return err
 }
 
 // Kullanıcıyı ID ile getiren fonksiyon
-func GetUserByID(id string) (*models.User, error) {
+func GetUserByID(ctx context.Context,id string) (*models.User, error) {
 	var user models.User
 	// Convert the string id to ObjectID
 	objectID, err := primitive.ObjectIDFromHex(id)
@@ -37,6 +37,6 @@ func GetUserByID(id string) (*models.User, error) {
 	}
 
 	// Search using ObjectID
-	err = userCollection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&user)
+	err = userCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&user)
 	return &user, err
 }
