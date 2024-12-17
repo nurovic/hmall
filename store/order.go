@@ -11,7 +11,6 @@ import (
 var orderCollection *mongo.Collection
 
 func init() {
-	// MongoDB client al ve koleksiyonu başlat
 	client := GetMongoClient()
 	orderCollection = client.Database("hmall").Collection("orders")
 }
